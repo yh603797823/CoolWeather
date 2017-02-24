@@ -1,0 +1,18 @@
+<litepal>
+
+    <!--数据库名字-->
+    <dbname value="cool_weather" />
+    <!--版本号-->
+    <version value="1" />
+
+    <!--对象关系映射-->
+    <list>
+
+        <mapping class="com.example.yuhui.coolweather.db.City" />
+        <mapping class="com.example.yuhui.coolweather.db.Province" />
+        <mapping class="com.example.yuhui.coolweather.db.County" />
+
+    </list>
+
+
+</litepal>
