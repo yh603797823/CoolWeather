@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.example.yuhui.coolweather.db.City;
 import com.example.yuhui.coolweather.db.County;
 import com.example.yuhui.coolweather.db.Province;
+import com.example.yuhui.coolweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,23 +20,23 @@ public class Utility {
 
 
     public static boolean handleProvinceResponse(String response) {
-        if (TextUtils.isEmpty(response)) {
-            return false;
-        }
-        try {
-            JSONArray allProvinces = new JSONArray(response);
-            for (int i = 0; i < allProvinces.length(); i++) {
-                JSONObject provinceObject = allProvinces.getJSONObject(i);
-                Province province = new Province();
-                String name = provinceObject.getString("name");
-                int id = provinceObject.getInt("id");
-                province.setId(id);
-                province.setProvinceName(name);
-                province.save();
+        if (!TextUtils.isEmpty(response)) {
+
+            try {
+                JSONArray allProvinces = new JSONArray(response);
+                for (int i = 0; i < allProvinces.length(); i++) {
+                    JSONObject provinceObject = allProvinces.getJSONObject(i);
+                    Province province = new Province();
+                    String name = provinceObject.getString("name");
+                    int code = provinceObject.getInt("id");
+                    province.setProvinceCode(code);
+                    province.setProvinceName(name);
+                    province.save();
+                }
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            return true;
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
         return false;
     }
@@ -49,9 +51,9 @@ public class Utility {
                 JSONObject cityObject = allCities.getJSONObject(i);
                 City city = new City();
                 String name = cityObject.getString("name");
-                int id = cityObject.getInt("id");
+                int code = cityObject.getInt("id");
                 city.setCityName(name);
-                city.setId(id);
+                city.setCityCode(code);
                 city.setProvinceId(provinceId);
                 city.save();
             }
@@ -83,5 +85,17 @@ public class Utility {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static Weather handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
